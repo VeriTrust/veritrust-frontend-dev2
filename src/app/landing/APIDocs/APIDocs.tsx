@@ -278,7 +278,7 @@ export default function APIDocs() {
               </p>
             </div>
             <Button className="mt-4 md:mt-0" asChild>
-              <a href="https://veritrust-backend.vercel.app/docs" target="_blank" rel="noopener noreferrer" className="flex items-center">
+              <a href="https://veritrust-backend-three.vercel.app/docs" target="_blank" rel="noopener noreferrer" className="flex items-center">
                 <ExternalLink className="mr-2 h-4 w-4" />
                 Open Swagger Docs
               </a>
@@ -331,7 +331,7 @@ export default function APIDocs() {
                         <div>
                           <p className="text-sm text-muted-foreground">
                             For detailed information about request parameters, response schemas, and interactive testing, 
-                            please refer to the <a href="https://veritrust-backend.vercel.app/docs" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Swagger documentation</a>.
+                            please refer to the <a href="https://veritrust-backend-three.vercel.app/docs" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Swagger documentation</a>.
                           </p>
                         </div>
                       </div>
