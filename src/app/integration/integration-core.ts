@@ -112,14 +112,42 @@ export async function verifyManually(claims: string, ingredients: string): Promi
   if (!apiResponse.ok) {
     throw new Error(`error: ${apiResponse.status}`);
   }
-  
+
+  // Get response text first for debugging
+  const responseText = await apiResponse.text();
+  console.log('Raw API Response text:', responseText);
+  console.log('Response text length:', responseText.length);
+
+  // Check if response is empty
+  if (!responseText.trim()) {
+    throw new Error('API returned empty response');
+  }
+
   // Parse response
-  const data = await apiResponse.json() as { 'extracted-text': string };
-  
-  // Parse the JSON string from the extracted-text field
+  let data;
   try {
-    const extractedText = data['extracted-text'] || '';
-    const parsedResult = JSON.parse(extractedText) as ManualVerificationResponse;
+    data = JSON.parse(responseText);
+    console.log('Parsed API Response data:', data);
+  } catch (jsonError) {
+    console.error('Failed to parse JSON:', jsonError);
+    throw new Error(`Invalid JSON response: ${responseText}`);
+  }
+
+  // Try to parse response directly first (new format), then fall back to extracted-text wrapping (legacy format)
+  let parsedResult: ManualVerificationResponse;
+
+  try {
+    console.log('Checking direct response format...');
+    // First try: direct response format
+    if (data.verdict !== undefined && data.why !== undefined && data.detailed_explanation !== undefined && data.trustability_score !== undefined) {
+      console.log('Using direct response format');
+      parsedResult = data as ManualVerificationResponse;
+    } else {
+      console.log('Using legacy extracted-text format');
+      // Fallback: legacy extracted-text format
+      const extractedText = data['extracted-text'] || '';
+      parsedResult = JSON.parse(extractedText) as ManualVerificationResponse;
+    }
     
     // Check if there's an alternatives response
     try {
@@ -150,9 +178,11 @@ export async function verifyManually(claims: string, ingredients: string): Promi
     } catch (error) {
       console.error('Failed to fetch alternatives:', error);
     }
-    
+
+    console.log('Returning parsed result:', parsedResult);
     return parsedResult;
-  } catch {
+  } catch (parseError) {
+    console.error('Parse error:', parseError);
     throw new Error('Failed to parse');
   }
 }
